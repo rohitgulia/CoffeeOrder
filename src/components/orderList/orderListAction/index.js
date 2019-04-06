@@ -11,8 +11,8 @@ export const getOrderList = () => {
 
         let result = [
             {
-                "coffeeName": 'bellaDonovan',
-                "brewMethod": 'coldBrew',
+                "coffeeName": 'Bella Donovan',
+                "brewMethod": 'Cold Brew',
                 "shipDate": '2019-12-10',
                 "numberOfCases": '4',
                 "packetsPerCase": '25',
@@ -21,8 +21,8 @@ export const getOrderList = () => {
                 "orderId": '1',
             },
             {
-                "coffeeName": 'giantSteps',
-                "brewMethod": 'frenchPress',
+                "coffeeName": 'Giant Steps',
+                "brewMethod": 'French Press',
                 "shipDate": '2019-12-20',
                 "numberOfCases": '5',
                 "packetsPerCase": '50',
@@ -43,8 +43,8 @@ export const submitOrderDetails = (orderDetails) => {
 
         let result = [
             {
-                "coffeeName": 'bellaDonovan',
-                "brewMethod": 'coldBrew',
+                "coffeeName": 'Bella Donovan',
+                "brewMethod": 'Cold Brew',
                 "shipDate": '2019-12-10',
                 "numberOfCases": '4',
                 "packetsPerCase": '25',
@@ -53,16 +53,16 @@ export const submitOrderDetails = (orderDetails) => {
                 "orderId": '1'
             },
             {
-                "coffeeName": 'giantSteps',
-                "brewMethod": 'frenchPress',
+                "coffeeName": 'Giant Steps',
+                "brewMethod": 'French Press',
                 "shipDate": '2019-12-20',
                 "numberOfCases": '6',
                 "packetsPerCase": '50',
                 "orderId": '2'
             },
             {
-                "coffeeName": 'bellaDonovan',
-                "brewMethod": 'pourOver',
+                "coffeeName": 'Bella Donovan',
+                "brewMethod": 'Pour Over',
                 "shipDate": '2019-11-10',
                 "numberOfCases": '4',
                 "packetsPerCase": '25',

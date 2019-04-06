@@ -2,15 +2,13 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import {connect} from "react-redux";
-import {orderDetailObj, coffeeName, brewMethod} from "./util/orderDetailObj";
+import {orderDetailObj, coffeeNameList, methodNameList, packetsPerCaseList} from "./util/orderDetailObj";
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -20,14 +18,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import _ from 'lodash';
 import { Message } from 'semantic-ui-react';
-import { submitOrderDetails } from '../orderList/orderListAction';
 
 const DialogTitle = withStyles(theme => ({
     root: {
@@ -73,50 +66,21 @@ const styles = theme => ({
 
 class _OrderDetails extends Component {
 
-    state = {
-        orderDetailObj,
-        errorMsg: ''
-    }
-
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if(nextProps.orderDetails !== prevState.orderDetails ) {
-            return {orderDetailObj: nextProps.orderDetails};
-        }
-    }
-
-    // componentWillReceiveProps(prevState) {
-    //     if(this.props.orderDetails && this.props.orderDetails !== prevState.orderDetailObj)
-    //         this.setState({orderDetailObj: this.props.orderDetails});
-    // }
-
     handleClose = () => {
         this.props.handleDialogOpenClose(false);
     };
 
     handleOrderDetailsChange = event => {
-        let orderDtlObj = this.state.orderDetailObj;
-        if(event.target.type === "checkbox")
-            this.setState({orderDetailObj: {...orderDtlObj, [event.target.name]: event.target.checked}});
-        else
-            this.setState({orderDetailObj: {...orderDtlObj, [event.target.name]: event.target.value}});
-    }
+        this.props.handleOrderDetailsChange(event);
+    };
 
     handleOrderSubmit = event => {
         event.preventDefault();
-        try {
-            this.props.submitOrderDetails(this.state.orderDetailObj);
-        }catch (e) {
-            console.log(e);
-            this.setState({errorMsg:'Error occured!!'});
-        }finally {
-            this.handleClose();
-        }
-    }
-
+        this.props.handleOrderSubmit();
+    };
 
     render() {
-        const { fullScreen, openDialog, classes } = this.props;
-        const {errorMsg} = this.state;
+        const { fullScreen, openDialog, classes, errorMsg, orderDetails } = this.props;
         return(
             <div>
                 <Dialog
@@ -144,7 +108,7 @@ class _OrderDetails extends Component {
                                         <Select
                                             native
                                             required
-                                            value={this.state.orderDetailObj.coffeeName}
+                                            value={orderDetails.coffeeName}
                                             onChange={this.handleOrderDetailsChange}
                                             inputProps={{
                                                 name: 'coffeeName',
@@ -152,8 +116,10 @@ class _OrderDetails extends Component {
                                             }}
                                         >
                                             <option value="" />
-                                            <option value={"bellaDonovan"}>Bella Donovan</option>
-                                            <option value={"giantSteps"}>Giant Steps</option>
+
+                                            {coffeeNameList.map((data,i) => {
+                                                return <option key={i} value={data}>{data}</option>
+                                            })}
                                         </Select>
                                         </FormControl>
                                     </Grid>
@@ -163,7 +129,7 @@ class _OrderDetails extends Component {
                                         <Select
                                             native
                                             required
-                                            value={this.state.orderDetailObj.brewMethod}
+                                            value={orderDetails.brewMethod}
                                             onChange={this.handleOrderDetailsChange}
                                             inputProps={{
                                                 name: 'brewMethod',
@@ -171,11 +137,9 @@ class _OrderDetails extends Component {
                                             }}
                                         >
                                             <option value="" />
-                                            <option value={"aeropress"}>Aeropress</option>
-                                            <option value={"coffeeMaker"}>Coffee Maker</option>
-                                            <option value={"coldBrew"}>Cold Brew</option>
-                                            <option value={"frenchPress"}>French Press</option>
-                                            <option value={"pourOver"}>Pour Over</option>
+                                            {methodNameList.map((data,i)=> {
+                                                return <option key={i} value={data}>{data}</option>
+                                            })}
                                         </Select>
                                         </FormControl>
                                     </Grid>
@@ -189,7 +153,7 @@ class _OrderDetails extends Component {
                                             required
                                             name="shipDate"
                                             type="date"
-                                            value={this.state.orderDetailObj.shipDate}
+                                            value={orderDetails.shipDate}
                                             onChange={this.handleOrderDetailsChange}
                                             InputLabelProps={{
                                                 shrink: true,
@@ -204,7 +168,7 @@ class _OrderDetails extends Component {
                                             label="Number of cases"
                                             required
                                             name="numberOfCases"
-                                            value={this.state.orderDetailObj.numberOfCases}
+                                            value={orderDetails.numberOfCases}
                                             onChange={this.handleOrderDetailsChange}
                                             type="number"
                                         />
@@ -216,7 +180,7 @@ class _OrderDetails extends Component {
                                         <Select
                                             native
                                             required
-                                            value={this.state.orderDetailObj.packetsPerCase}
+                                            value={orderDetails.packetsPerCase}
                                             onChange={this.handleOrderDetailsChange}
                                             inputProps={{
                                                 name: 'packetsPerCase',
@@ -224,20 +188,21 @@ class _OrderDetails extends Component {
                                             }}
                                         >
                                             <option value="" />
-                                            <option value={"25"}>25</option>
-                                            <option value={"50"}>50</option>
+                                            {packetsPerCaseList.map((data,i)=> {
+                                                return <option key={i} value={data}>{data}</option>
+                                            })}
                                         </Select>
                                     </FormControl>
                                 </Grid>
 
                                     <Grid item xs={12} sm={12}>
-                                        <TextArea placeholder='Add note' className={classes.textArea} name="notes" onChange={this.handleOrderDetailsChange} value={this.state.orderDetailObj.notes}/>
+                                        <TextArea placeholder='Add note' className={classes.textArea} name="notes" onChange={this.handleOrderDetailsChange} value={orderDetails.notes}/>
                                     </Grid>
                                     <Grid item xs={12} sm={12}>
                                         <FormControlLabel
                                             control={
                                                 <Checkbox
-                                                    checked={this.state.orderDetailObj.priority === 'true' ? true:false}
+                                                    checked={orderDetails.priority === 'true' || orderDetails.priority === true}
                                                     onChange={this.handleOrderDetailsChange}
                                                     name='priority'
                                                     value='priority'
@@ -274,12 +239,8 @@ const mapStateToProps = (state) => {
     return {state}
 }
 
-const mapDispatchToProps = {
-    submitOrderDetails
-}
-
 const __OrderDetails = withStyles(styles)(_OrderDetails)
 
 const OrderDetails = withMobileDialog()(__OrderDetails);
 
-export default connect(mapStateToProps, mapDispatchToProps)(OrderDetails);
+export default connect(mapStateToProps, null)(OrderDetails);
