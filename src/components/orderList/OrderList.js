@@ -71,9 +71,9 @@ class _OrderList extends React.Component {
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         try {
-            this.props.getOrderList();
+            await this.props.getOrderList();
         }catch (e) {
             this.setState({errorMsg:'Error occured!!'});
         }
@@ -114,17 +114,14 @@ class _OrderList extends React.Component {
         );
     };
 
-    handleOrderView = (event) => {
-                if(event.target.parentElement.parentElement.getAttribute("header") &&
-                    event.target.parentElement.parentElement.getAttribute("header").toLowerCase() === "view") {
+    handleOrderView = (orderId) => {
                     this.props.orderList.map((data,i) => {
-                        if(data.orderId === event.target.parentElement.parentElement.getAttribute("orderid")) {
+                        if(data.orderId === orderId) {
                             this.setState({orderDetailObj: {...orderDetailObj ,...data} });
                             this.handleDialogOpenClose(true);
                         }
 
                     })
-                }
     };
 
     handleChangePage = (event, page) => {
@@ -135,14 +132,15 @@ class _OrderList extends React.Component {
         this.setState({ rowsPerPage: event.target.value });
     };
 
-    handleOrderSubmit = () => {
+    handleOrderSubmit = async () => {
         try {
-            this.props.submitOrderDetails(this.state.orderDetailObj);
+            await this.props.submitOrderDetails(this.state.orderDetailObj);
         }catch (e) {
             console.log(e);
             this.setState({errorMsg:'Error occured!!'});
         }finally {
-            this.handleDialogOpenClose(false);
+            if(!this.state.errorMsg)
+                this.handleDialogOpenClose(false);
         }
     };
 
@@ -156,15 +154,16 @@ class _OrderList extends React.Component {
 
     render() {
         const { orderList, classes } = this.props;
-        const { rowsPerPage, page, orderBy, order } = this.state;
+        const { rowsPerPage, page, orderBy, order, errorMsg } = this.state;
         return (
             <div className={classes.root}>
                 {this.getHeader()}
                 <OrderDetails handleOrderSubmit={this.handleOrderSubmit} openDialog={this.state.openDialog} handleDialogOpenClose={this.handleDialogOpenClose}
                               handleOrderDetailsChange={this.handleOrderDetailsChange} orderDetails={this.state.orderDetailObj} errorMsg={this.state.errorMsg}/>
 
-                {this.state.errorMsg ? this.state.errorMsg :
+                { orderList.length === 0 ? <Typography variant="h5"> No Orders </Typography> :
                     <Paper className={classes.root}>
+                        <Typography variant="h6" style={{color: 'red'}}> {errorMsg} </Typography>
                         <div className={classes.title}>
                                 <Typography variant="h6" style={{color: '#2185d0'}}>
                                     ORDERS
@@ -201,8 +200,11 @@ class _OrderList extends React.Component {
                                                     {
                                                         tableHeaders.map((h,i) => {
                                                             let value = order[h.accessor];
-                                                            return <TableCell key={i} onClick={this.handleOrderView} orderid={order.orderId} header={h.header}>{h.header.toLowerCase() === "view" ? <Visibility style={{color: '#2185d0',cursor:'pointer'}}/> :
-                                                                h.accessor === "shipDate" && order["priority"] === "true" ?  <span> {value} <span style={{fontSize:'25px'}}>*</span> </span> :
+                                                            return h.header.toLowerCase() === "view" ?
+                                                            <TableCell key={i} onClick={() => this.handleOrderView(order.orderId)} orderid={order.orderId}><Visibility style={{color: '#2185d0',cursor:'pointer'}}/>
+                                                            </TableCell>
+                                                                :
+                                                            <TableCell key={i}>{h.accessor === "shipDate" && order.priority === true ?  <span> {value} <span style={{fontSize:'25px'}}>*</span> </span> :
                                                                 value}</TableCell>
                                                         })
                                                     }

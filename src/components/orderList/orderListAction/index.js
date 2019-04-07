@@ -4,74 +4,38 @@ import blueBottleApi from '../../api/coffeeOrder';
 export const getOrderList = () => {
     return async function(dispatch, getState) {
         // make api call
-        // const result = await blueBottleApi.get('/listOfOrders').then(
-        //     res => {
-        //      return res;
-        //     }).catch(error => {throw error});
-
-        let result = [
-            {
-                "coffeeName": 'Bella Donovan',
-                "brewMethod": 'Cold Brew',
-                "shipDate": '2019-12-10',
-                "numberOfCases": '4',
-                "packetsPerCase": '25',
-                "notes": 'take care please',
-                "priority": 'true',
-                "orderId": '1',
-            },
-            {
-                "coffeeName": 'Giant Steps',
-                "brewMethod": 'French Press',
-                "shipDate": '2019-12-20',
-                "numberOfCases": '5',
-                "packetsPerCase": '50',
-                "orderId": '2'
-            }
-        ];
-        dispatch({type:"UPDATE_ORDER_LIST", orderList: result});
+        const result = await blueBottleApi.get('/orders/orderList').then(
+            res => {
+             return res;
+            }).catch(error => {throw error});
+        dispatch({type:"GET_ORDER_LIST", orderList: result.data});
     }
 }
 
 export const submitOrderDetails = (orderDetails) => {
     return async function (dispatch, getState) {
-        // make api call
-        // const result = await blueBottleApi.post('/newOrder', orderDetails).then(
-        //     res => {
-        //         return res;
-        //     }).catch( error => {throw error});
+        const errorObj = {"error":"Failed"};
+        //make api call
+        if(orderDetails.orderId) {
+            const result = await blueBottleApi.put('/orders/updateOrder', orderDetails).then(
+                res => {
+                    return res;
+                }).catch( error => {throw error});
+            if(result.data.result === "success")
+                dispatch({type:"MODIFY_ORDER", orderDetails});
+            else
+                throw errorObj;
 
-        let result = [
-            {
-                "coffeeName": 'Bella Donovan',
-                "brewMethod": 'Cold Brew',
-                "shipDate": '2019-12-10',
-                "numberOfCases": '4',
-                "packetsPerCase": '25',
-                "notes": 'take care please',
-                "priority": 'true',
-                "orderId": '1'
-            },
-            {
-                "coffeeName": 'Giant Steps',
-                "brewMethod": 'French Press',
-                "shipDate": '2019-12-20',
-                "numberOfCases": '6',
-                "packetsPerCase": '50',
-                "orderId": '2'
-            },
-            {
-                "coffeeName": 'Bella Donovan',
-                "brewMethod": 'Pour Over',
-                "shipDate": '2019-11-10',
-                "numberOfCases": '4',
-                "packetsPerCase": '25',
-                "priority": 'true',
-                "orderId": '3'
-            }
-        ];
-
-        dispatch({type:"UPDATE_ORDER_LIST", orderList: result});
+        } else {
+            const result = await blueBottleApi.post('/orders/addOrder', orderDetails).then(
+                res => {
+                    return res;
+                }).catch( error => {throw error});
+            if(result.data.result === "success")
+                dispatch({type:"ADD_ORDER", orderDetails});
+            else
+                throw errorObj;
+        }
 
     }
 }
