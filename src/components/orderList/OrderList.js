@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import { Header } from 'semantic-ui-react';
 import { Button } from 'semantic-ui-react';
-import moment from 'moment';
+import moment from 'moment/moment';
 import { Label } from 'semantic-ui-react';
 import OrderDetails from '../orderDetails/OrderDetails';
 import Visibility from '@material-ui/icons/Visibility';
@@ -78,6 +78,7 @@ class _OrderList extends React.Component {
             this.setState({errorMsg:'Error occured!!'});
         }
     }
+
     handleDialogOpenClose = (isOpen) => {
         this.setState({ openDialog: isOpen });
         if(!isOpen)
@@ -87,13 +88,13 @@ class _OrderList extends React.Component {
         return moment(new Date()).format('MMM');
     }
     getCurrentDate = () => {
-        return new Date().getDay();
+        return moment(new Date()).format('DD');
     }
     getHeader = () => {
         return (
             <Grid container spacing={24} style={{'marginBottom': '20px'}}>
                 <Grid item xs={3} sm={2}>
-                    <Label size={'huge'}>
+                    <Label size={'huge'} className='currentDateMonth'>
                         <div>
                             {this.getCurrentMonth()}
                         </div>
@@ -120,7 +121,7 @@ class _OrderList extends React.Component {
                             this.setState({orderDetailObj: {...orderDetailObj ,...data} });
                             this.handleDialogOpenClose(true);
                         }
-
+                        return '';
                     })
     };
 
@@ -135,6 +136,7 @@ class _OrderList extends React.Component {
     handleOrderSubmit = async () => {
         try {
             await this.props.submitOrderDetails(this.state.orderDetailObj);
+            this.setState({errorMsg:''});
         }catch (e) {
             console.log(e);
             this.setState({errorMsg:'Error occured!!'});
@@ -238,7 +240,6 @@ class _OrderList extends React.Component {
         );
     }
 }
-
 
 const mapStateToProps = state => {
     return state;

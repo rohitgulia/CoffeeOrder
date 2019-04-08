@@ -1,9 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
+import OrderList from '../src/components/orderList/OrderList';
+import App from '../src/App';
+import { expect } from 'chai';
+import { mount, render, shallow, configure} from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+configure({ adapter: new Adapter() });
 
 it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
+  const wrapper = shallow(<App />);
+  expect(wrapper.find(OrderList)).to.have.length(1);
 });

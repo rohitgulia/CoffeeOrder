@@ -31,8 +31,10 @@ export const submitOrderDetails = (orderDetails) => {
                 res => {
                     return res;
                 }).catch( error => {throw error});
-            if(result.data.result === "success")
-                dispatch({type:"ADD_ORDER", orderDetails});
+            if(result.data.result !== "error") {
+                const newOrderDtls = result.data.result;
+                dispatch({type:"ADD_ORDER", orderDetails:newOrderDtls});
+            }
             else
                 throw errorObj;
         }

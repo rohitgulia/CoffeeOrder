@@ -6,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import {connect} from "react-redux";
-import {orderDetailObj, coffeeNameList, methodNameList, packetsPerCaseList} from "./util/orderDetailObj";
+import {coffeeNameList, methodNameList, packetsPerCaseList} from "./util/orderDetailObj";
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
