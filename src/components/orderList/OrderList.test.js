@@ -1,5 +1,5 @@
 import React from 'react';
-import OrderList from './OrderList';
+import {OrderListOrig} from './OrderList';
 import OrderDetails from '../orderDetails/OrderDetails';
 import { expect } from 'chai';
 import { mount, render, shallow, configure} from 'enzyme';
@@ -13,25 +13,49 @@ const mockStore = configureMockStore();
 const store = mockStore({orderList:[]});
 
 describe('Order list component', ()=> {
-it("renders order details component", () => {
-    const wrapper = shallow(
-    <Provider store={store}>
-        <OrderList />
-    </Provider>
+it("renders Order list component", () => {
+    const wrapper = mount(<Provider store={store}>
+            <OrderListOrig />
+        </Provider>
     );
-    expect(wrapper.find(OrderList)).to.have.length(1);
+    expect(wrapper.find(OrderListOrig)).to.have.length(1);
 });
 
-it("renders dateMonth details", () => {
-    const wrapper = shallow(<OrderList />);
-    expect(wrapper.find('.currentDateMonth')).to.have.length(1);
+it("renders header details with date, title and a button", () => {
+    const wrapper = mount(<Provider store={store}><OrderListOrig /></Provider>);
+    expect(wrapper.find('.appHeader')).to.have.length(3);
 });
 
-    it('passes dialog open prop to the order details', ()=> {
-        const wrapper = shallow(<OrderList />);
-        wrapper.setState({openDialog:false});
-        wrapper.setState({orderDetailObj: orderDetailObj});
-        wrapper.find('button').simulate('click');
-        expect(wrapper.find(OrderDetails)).to.have.length(1);
-    })
+it('should pass openDialog prop to orderDetails component when clicking on createNewOrder button', ()=> {
+        let wrapper = mount(<Provider store={store}><OrderListOrig /></Provider>);
+        let orderDetails = wrapper.find(OrderDetails);
+        expect(orderDetails.props().openDialog).to.equal(false);
+        wrapper.find('button.createNewOrder').simulate('click');
+        orderDetails = wrapper.find(OrderDetails);
+        expect(orderDetails.props().openDialog).to.equal(true);
+});
+
+it('should pass openDialog prop to orderDetails component when clicking on view icon to view order', ()=>{
+    const orderListData = [
+        {
+            "coffeeName": 'coldBrew',
+            "brewMethod": 'bellaDonovan',
+            "shipDate": '2019-12-10',
+            "numberOfCases": 4,
+            "packetsPerCase": 25,
+            "notes": '',
+            "priority": false,
+            "orderId": 1
+        }
+    ]
+    const wrapper = mount(<Provider store={store}><OrderListOrig orderList={orderListData} /> </Provider>);
+    let orderDetailsComp = wrapper.find(OrderDetails);
+    expect(orderDetailsComp.props().openDialog).to.equal(false);
+    wrapper.find('.viewOrder').at(0).simulate('click');
+    orderDetailsComp = wrapper.find(OrderDetails);
+    expect(orderDetailsComp.props().openDialog).to.equal(true);
+    debugger;
+    expect(orderDetailsComp.props().orderDetails).to.deep.equal(orderListData[0]);
+});
+
 });

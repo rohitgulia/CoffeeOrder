@@ -92,9 +92,9 @@ class _OrderList extends React.Component {
     }
     getHeader = () => {
         return (
-            <Grid container spacing={24} style={{'marginBottom': '20px'}}>
+            <Grid container spacing={24} style={{'marginBottom': '20px'}} className='appHeader'>
                 <Grid item xs={3} sm={2}>
-                    <Label size={'huge'} className='currentDateMonth'>
+                    <Label size={'huge'}>
                         <div>
                             {this.getCurrentMonth()}
                         </div>
@@ -107,7 +107,7 @@ class _OrderList extends React.Component {
                     <Header as='h2'>Perfectly Ground Work Orders</Header>
                 </Grid>
                 <Grid item xs={4} sm={4} style={{'textAlign': 'right'}}>
-                    <Button variant="outlined" color="blue" onClick={() => this.handleDialogOpenClose(true)}>
+                    <Button variant="outlined" color="blue" className='createNewOrder' onClick={() => this.handleDialogOpenClose(true)}>
                         CREATE ORDER
                     </Button>
                 </Grid>
@@ -155,7 +155,7 @@ class _OrderList extends React.Component {
     };
 
     render() {
-        const { orderList, classes } = this.props;
+        const { orderList=[], classes={} } = this.props;
         const { rowsPerPage, page, orderBy, order, errorMsg } = this.state;
         return (
             <div className={classes.root}>
@@ -165,6 +165,7 @@ class _OrderList extends React.Component {
 
                 { orderList.length === 0 ? <Typography variant="h5"> No Orders </Typography> :
                     <Paper className={classes.root}>
+                    
                         <Typography variant="h6" style={{color: 'red'}}> {errorMsg} </Typography>
                         <div className={classes.title}>
                                 <Typography variant="h6" style={{color: '#2185d0'}}>
@@ -177,7 +178,7 @@ class _OrderList extends React.Component {
                                     <TableRow>
                                         {
                                             tableHeaders.map(({header, accessor},i) =>
-                                                <TableCell keys={i}>
+                                                <TableCell key={i}>
                                                     <Typography variant="subtitle2" style={{fontWeight:'bold'}}> {header} </Typography>
                                                 </TableCell>)
                                         }
@@ -203,7 +204,7 @@ class _OrderList extends React.Component {
                                                         tableHeaders.map((h,i) => {
                                                             let value = order[h.accessor];
                                                             return h.header.toLowerCase() === "view" ?
-                                                            <TableCell key={i} onClick={() => this.handleOrderView(order.orderId)} orderid={order.orderId}><Visibility style={{color: '#2185d0',cursor:'pointer'}}/>
+                                                            <TableCell key={i} className='viewOrder' onClick={() => this.handleOrderView(order.orderId)} orderid={order.orderId}><Visibility style={{color: '#2185d0',cursor:'pointer'}}/>
                                                             </TableCell>
                                                                 :
                                                             <TableCell key={i}>{h.accessor === "shipDate" && order.priority === true ?  <span> {value} <span style={{fontSize:'25px'}}>*</span> </span> :
@@ -249,6 +250,8 @@ const mapDispatchToProps = {
     getOrderList,
     submitOrderDetails
 }
+
+export const OrderListOrig = _OrderList;
 
 const OrderList = withStyles(styles)(_OrderList);
 
