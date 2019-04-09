@@ -61,6 +61,12 @@ In future we should store the options in database and send them from api to fron
     component but this would have created issues as all the OrderDetail components elements were controlled and this would have caused the state to
     set with improper values with every input change.
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Deployment
+
+Run npm run build which will create build folder containing staic html, js files for the project. This build folder can be used to deploy on any of the servers.
+
 
 
 
