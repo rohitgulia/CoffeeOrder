@@ -27,10 +27,12 @@ export const submitOrderDetails = (orderDetails) => {
                 throw errorObj;
 
         } else {
+            debugger;
             const result = await blueBottleApi.post('/orders/addOrder', orderDetails).then(
                 res => {
+                    debugger;
                     return res;
-                }).catch( error => {throw error});
+                }).catch( error => {debugger; throw error});
             if(result.data.result !== "error") {
                 const newOrderDtls = result.data.result;
                 dispatch({type:"ADD_ORDER", orderDetails:newOrderDtls});

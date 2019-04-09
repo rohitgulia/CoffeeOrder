@@ -139,7 +139,7 @@ class _OrderList extends React.Component {
             this.setState({errorMsg:''});
         }catch (e) {
             console.log(e);
-            this.setState({errorMsg:'Error occured!!'});
+            this.setState({errorMsg: e.response.data.error || e});
         }finally {
             if(!this.state.errorMsg)
                 this.handleDialogOpenClose(false);
